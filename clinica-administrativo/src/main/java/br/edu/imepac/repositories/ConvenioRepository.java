@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConvenioRepository extends JpaRepository<ConvenioModel, Long> {
+    // Métodos personalizados de consulta podem ser adicionados aqui, se necessário
 }

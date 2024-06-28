@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EspecialidadeRepository extends JpaRepository<EspecialidadeModel, Long> {
-    // Métodos personalizados podem ser adicionados aqui, se necessário
 }

@@ -3,8 +3,10 @@ package br.edu.imepac.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Set;
+
 @Entity
-@Table(name = "especialidade")
+@Table(name = "especialidades")
 @Data
 public class EspecialidadeModel {
 
@@ -12,11 +14,8 @@ public class EspecialidadeModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
+    private String nome;  // Renomeado para consistência com a definição anterior
 
-    // Caso precise de uma descrição, pode adicionar assim:
-    private String descricao;
-
-    // Construtores, getters e setters são gerados automaticamente pelo Lombok
+    @ManyToMany(mappedBy = "especialidades")
+    private Set<MedicoModel> medicos;
 }

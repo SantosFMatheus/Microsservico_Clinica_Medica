@@ -1,42 +1,61 @@
 package br.edu.imepac.controllers;
 
-import br.edu.imepac.dtos.ConvenioDto;
 import br.edu.imepac.dtos.ConvenioCreateRequest;
+import br.edu.imepac.dtos.ConvenioDto;
 import br.edu.imepac.services.ConvenioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/convenios")
+@RequestMapping("/convenio")
 public class ConvenioController {
 
+    private ConvenioService convenioService;
+
     @Autowired
-    private ConvenioService service;
-
-    @GetMapping
-    public List<ConvenioDto> getAllConvenios() {
-        return service.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ConvenioDto getConvenioById(@PathVariable Long id) {
-        return service.findById(id);
+    public ConvenioController(ConvenioService convenioService) {
+        this.convenioService = convenioService;
     }
 
     @PostMapping
-    public ConvenioDto createConvenio(@RequestBody ConvenioCreateRequest convenioRequest) {
-        return service.save(convenioRequest);
+    public ResponseEntity<ConvenioDto> saveConvenio(@RequestBody ConvenioCreateRequest convenioCreateRequest) {
+        ConvenioDto savedConvenio = convenioService.save(convenioCreateRequest);
+        return new ResponseEntity<>(savedConvenio, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ConvenioDto>> listAllConvenios() {
+        List<ConvenioDto> convenios = convenioService.findAll();
+        return new ResponseEntity<>(convenios, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ConvenioDto> getConvenioById(@PathVariable Long id) {
+        ConvenioDto convenioDto = convenioService.findById(id);
+        if (convenioDto != null) {
+            return new ResponseEntity<>(convenioDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
-    public ConvenioDto updateConvenio(@PathVariable Long id, @RequestBody ConvenioDto convenioDto) {
-        return service.update(id, convenioDto);
+    public ResponseEntity<ConvenioDto> updateConvenio(@PathVariable Long id, @RequestBody ConvenioDto convenioDetails) {
+        ConvenioDto updatedConvenio = convenioService.update(id, convenioDetails);
+        if (updatedConvenio != null) {
+            return new ResponseEntity<>(updatedConvenio, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteConvenio(@PathVariable Long id) {
-        service.deleteById(id);
+    public ResponseEntity<Void> deleteConvenio(@PathVariable Long id) {
+        convenioService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

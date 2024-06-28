@@ -11,28 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("medico")
+@RequestMapping("/medico")
 public class MedicoController {
 
     @Autowired
     private MedicoService medicoService;
 
-
     @PostMapping
-    public ResponseEntity<MedicoDto> saveDoctor(@RequestBody MedicoCreateRequest medicoCreateRequest) {
-        MedicoDto savedMedico = medicoService.save(medicoCreateRequest);
-        return new ResponseEntity<>(savedMedico, HttpStatus.CREATED);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<MedicoDto>> listAllDoctors() {
-        List<MedicoDto> medicos = medicoService.findAll();
-        return new ResponseEntity<>(medicos, HttpStatus.OK);
+    public ResponseEntity<MedicoDto> createMedico(@RequestBody MedicoCreateRequest medicoCreateRequest) {
+        MedicoDto createdMedico = medicoService.save(medicoCreateRequest);
+        return new ResponseEntity<>(createdMedico, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<MedicoDto> getDoctorById(@PathVariable Long id) {
+    public ResponseEntity<MedicoDto> getMedico(@PathVariable Long id) {
         MedicoDto medicoDto = medicoService.findById(id);
         if (medicoDto != null) {
             return new ResponseEntity<>(medicoDto, HttpStatus.OK);
@@ -41,20 +33,25 @@ public class MedicoController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<MedicoDto>> getAllMedicos() {
+        List<MedicoDto> medicos = medicoService.findAll();
+        return new ResponseEntity<>(medicos, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMedico(@PathVariable Long id) {
+        medicoService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<MedicoDto> updateDoctor(@PathVariable Long id, @RequestBody MedicoDto medicoDetails) {
+    public ResponseEntity<MedicoDto> updateMedico(@PathVariable Long id, @RequestBody MedicoDto medicoDetails) {
         MedicoDto updatedMedico = medicoService.update(id, medicoDetails);
         if (updatedMedico != null) {
             return new ResponseEntity<>(updatedMedico, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteDoctor(@PathVariable Long id) {
-        medicoService.delete(id);
     }
 }

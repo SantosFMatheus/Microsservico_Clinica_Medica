@@ -1,46 +1,57 @@
 package br.edu.imepac.controllers;
 
-import br.edu.imepac.models.EspecialidadeModel;
+import br.edu.imepac.dtos.EspecialidadeCreateRequest;
+import br.edu.imepac.dtos.EspecialidadeDto;
 import br.edu.imepac.services.EspecialidadeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/especialidades")
+@RequestMapping("/especialidade")
 public class EspecialidadeController {
 
     @Autowired
-    private EspecialidadeService service;
+    private EspecialidadeService especialidadeService;
 
-    @GetMapping
-    public List<EspecialidadeModel> getAllEspecialidades() {
-        return service.findAll();
+    @PostMapping
+    public ResponseEntity<EspecialidadeDto> createEspecialidade(@RequestBody EspecialidadeCreateRequest especialidadeCreateRequest) {
+        EspecialidadeDto createdEspecialidade = especialidadeService.save(especialidadeCreateRequest);
+        return new ResponseEntity<>(createdEspecialidade, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public EspecialidadeModel getEspecialidadeById(@PathVariable Long id) {
-        return service.findById(id);
-    }
-
-    @PostMapping
-    public EspecialidadeModel createEspecialidade(@RequestBody EspecialidadeModel especialidade) {
-        return service.save(especialidade);
-    }
-
-    @PutMapping("/{id}")
-    public EspecialidadeModel updateEspecialidade(@PathVariable Long id, @RequestBody EspecialidadeModel especialidade) {
-        EspecialidadeModel existing = service.findById(id);
-        if (existing != null) {
-            especialidade.setId(id);
-            return service.save(especialidade);
+    public ResponseEntity<EspecialidadeDto> getEspecialidade(@PathVariable Long id) {
+        EspecialidadeDto especialidadeDto = especialidadeService.findById(id);
+        if (especialidadeDto != null) {
+            return new ResponseEntity<>(especialidadeDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return null; // Ou lance uma exceção se preferir
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EspecialidadeDto>> getAllEspecialidades() {
+        List<EspecialidadeDto> especialidades = especialidadeService.findAll();
+        return new ResponseEntity<>(especialidades, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEspecialidade(@PathVariable Long id) {
-        service.deleteById(id);
+    public ResponseEntity<Void> deleteEspecialidade(@PathVariable Long id) {
+        especialidadeService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EspecialidadeDto> updateEspecialidade(@PathVariable Long id, @RequestBody EspecialidadeDto especialidadeDetails) {
+        EspecialidadeDto updatedEspecialidade = especialidadeService.update(id, especialidadeDetails);
+        if (updatedEspecialidade != null) {
+            return new ResponseEntity<>(updatedEspecialidade, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

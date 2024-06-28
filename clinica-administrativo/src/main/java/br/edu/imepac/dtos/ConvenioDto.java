@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ConvenioDto {
     private Long id;
-    private String nome;
-    private String status;
-    private String cobertura;
+    private String empresaConvenio;
+    private String cnpj;
+    private String telefone;
 }

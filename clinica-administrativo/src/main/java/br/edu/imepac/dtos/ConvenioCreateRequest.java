@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ConvenioCreateRequest {
-    private String nome;
-    private String status;
-    private String cobertura;
+    private String empresaConvenio;
+    private String cnpj;
+    private String telefone;
 }

@@ -4,6 +4,7 @@ import br.edu.imepac.dtos.ConvenioCreateRequest;
 import br.edu.imepac.dtos.ConvenioDto;
 import br.edu.imepac.models.ConvenioModel;
 import br.edu.imepac.repositories.ConvenioRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,76 +15,50 @@ import java.util.stream.Collectors;
 @Service
 public class ConvenioService {
 
-    @Autowired
-    private ConvenioRepository repository;
+    private ConvenioRepository convenioRepository;
+    private ModelMapper modelMapper;
 
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    @Autowired
+    public ConvenioService(ConvenioRepository convenioRepository, ModelMapper modelMapper) {
+        this.convenioRepository = convenioRepository;
+        this.modelMapper = modelMapper;
+    }
+
+    public void delete(Long id) {
+        convenioRepository.deleteById(id);
     }
 
     public List<ConvenioDto> findAll() {
-        List<ConvenioModel> convenios = repository.findAll();
-        return convenios.stream().map(convenio -> {
-            ConvenioDto convenioDto = new ConvenioDto();
-            convenioDto.setId(convenio.getId());
-            convenioDto.setNome(convenio.getNome());
-            convenioDto.setStatus(convenio.getStatus());
-            convenioDto.setCobertura(convenio.getCobertura());
-            return convenioDto;
-        }).collect(Collectors.toList());
+        List<ConvenioModel> convenios = convenioRepository.findAll();
+        return convenios.stream()
+                .map(convenio -> modelMapper.map(convenio, ConvenioDto.class))
+                .collect(Collectors.toList());
     }
 
-    public ConvenioDto findById(Long id) {
-        Optional<ConvenioModel> optionalConvenio = repository.findById(id);
+    public ConvenioDto update(Long id, ConvenioDto convenioDetails) {
+        Optional<ConvenioModel> optionalConvenio = convenioRepository.findById(id);
+
         if (optionalConvenio.isPresent()) {
-            ConvenioModel convenio = optionalConvenio.get();
-            ConvenioDto convenioDto = new ConvenioDto();
-            convenioDto.setId(convenio.getId());
-            convenioDto.setNome(convenio.getNome());
-            convenioDto.setStatus(convenio.getStatus());
-            convenioDto.setCobertura(convenio.getCobertura());
-            return convenioDto;
+            ConvenioModel convenioModel = optionalConvenio.get();
+            convenioModel.setEmpresaConvenio(convenioDetails.getEmpresaConvenio());
+            convenioModel.setCnpj(convenioDetails.getCnpj());
+            convenioModel.setTelefone(convenioDetails.getTelefone());
+
+            ConvenioModel updatedConvenio = convenioRepository.save(convenioModel);
+            return modelMapper.map(updatedConvenio, ConvenioDto.class);
         } else {
             return null;
         }
     }
 
     public ConvenioDto save(ConvenioCreateRequest convenioRequest) {
-        ConvenioModel convenio = new ConvenioModel();
-        convenio.setNome(convenioRequest.getNome());
-        convenio.setStatus(convenioRequest.getStatus());
-        convenio.setCobertura(convenioRequest.getCobertura());
-
-        ConvenioModel savedConvenio = repository.save(convenio);
-
-        ConvenioDto convenioDto = new ConvenioDto();
-        convenioDto.setId(savedConvenio.getId());
-        convenioDto.setNome(savedConvenio.getNome());
-        convenioDto.setStatus(savedConvenio.getStatus());
-        convenioDto.setCobertura(savedConvenio.getCobertura());
-
-        return convenioDto;
+        ConvenioModel convenioModel = modelMapper.map(convenioRequest, ConvenioModel.class);
+        ConvenioModel savedConvenio = convenioRepository.save(convenioModel);
+        return modelMapper.map(savedConvenio, ConvenioDto.class);
     }
 
-    public ConvenioDto update(Long id, ConvenioDto convenioDto) {
-        Optional<ConvenioModel> optionalConvenio = repository.findById(id);
-        if (optionalConvenio.isPresent()) {
-            ConvenioModel convenio = optionalConvenio.get();
-            convenio.setNome(convenioDto.getNome());
-            convenio.setStatus(convenioDto.getStatus());
-            convenio.setCobertura(convenioDto.getCobertura());
-
-            ConvenioModel updatedConvenio = repository.save(convenio);
-
-            ConvenioDto updatedDto = new ConvenioDto();
-            updatedDto.setId(updatedConvenio.getId());
-            updatedDto.setNome(updatedConvenio.getNome());
-            updatedDto.setStatus(updatedConvenio.getStatus());
-            updatedDto.setCobertura(updatedConvenio.getCobertura());
-
-            return updatedDto;
-        } else {
-            return null;
-        }
+    public ConvenioDto findById(Long id) {
+        Optional<ConvenioModel> optionalConvenio = convenioRepository.findById(id);
+        return optionalConvenio.map(convenio -> modelMapper.map(convenio, ConvenioDto.class)).orElse(null);
     }
 }
