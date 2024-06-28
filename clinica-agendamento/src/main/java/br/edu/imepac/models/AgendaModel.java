@@ -15,14 +15,8 @@ public class AgendaModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "medico_id")
-    private MedicoModel medico;
-
-    @ManyToOne
-    @JoinColumn(name = "paciente_id")
-    private PacienteModel paciente;
-
+    private Long pacienteId;
+    private Long medicoId;
     private Long atendenteId;
     private LocalDate data;
     private LocalTime hora;
