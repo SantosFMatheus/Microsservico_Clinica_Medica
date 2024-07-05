@@ -6,10 +6,9 @@
         <artifactId>clinica-medica</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>clinica-administrativo</artifactId>
-    <name>Archetype - clinica-administrativo</name>
+    <artifactId>clinica-agendamento</artifactId>
+    <name>Archetype - clinica-agendamento</name>
     <url>http://maven.apache.org</url>
-    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -37,6 +36,16 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>2.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>br.edu.imepac</groupId>
+            <artifactId>commons-module</artifactId>
         </dependency>
 
     </dependencies>

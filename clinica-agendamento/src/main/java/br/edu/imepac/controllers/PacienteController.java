@@ -1,5 +1,6 @@
 package br.edu.imepac.controllers;
 
+
 import br.edu.imepac.dtos.PacienteCreateRequest;
 import br.edu.imepac.dtos.PacienteDto;
 import br.edu.imepac.services.PacienteService;
@@ -14,33 +15,35 @@ import java.util.List;
 @RequestMapping("/paciente")
 public class PacienteController {
 
+    @Autowired
     private PacienteService pacienteService;
 
-    @Autowired
-    public PacienteController(PacienteService pacienteService) {
-        this.pacienteService = pacienteService;
-    }
-
     @PostMapping
-    public ResponseEntity<PacienteDto> savePaciente(@RequestBody PacienteCreateRequest pacienteCreateRequest) {
-        PacienteDto savedPaciente = pacienteService.save(pacienteCreateRequest);
-        return new ResponseEntity<>(savedPaciente, HttpStatus.CREATED);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<PacienteDto>> listAllPacientes() {
-        List<PacienteDto> pacientes = pacienteService.findAll();
-        return new ResponseEntity<>(pacientes, HttpStatus.OK);
+    public ResponseEntity<PacienteDto> createPaciente(@RequestBody PacienteCreateRequest pacienteCreateRequest) {
+        PacienteDto createdPaciente = pacienteService.save(pacienteCreateRequest);
+        return new ResponseEntity<>(createdPaciente, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PacienteDto> getPacienteById(@PathVariable Long id) {
+    public ResponseEntity<PacienteDto> getPaciente(@PathVariable Long id) {
         PacienteDto pacienteDto = pacienteService.findById(id);
         if (pacienteDto != null) {
             return new ResponseEntity<>(pacienteDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PacienteDto>> getAllPacientes() {
+        List<PacienteDto> pacientes = pacienteService.findAll();
+        return new ResponseEntity<>(pacientes, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePaciente(@PathVariable Long id) {
+        pacienteService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
@@ -51,11 +54,5 @@ public class PacienteController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePaciente(@PathVariable Long id) {
-        pacienteService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -9,47 +9,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/agenda")
+@RequestMapping("/agendas")
 public class AgendaController {
-
     @Autowired
     private AgendaService agendaService;
 
     @GetMapping
     public ResponseEntity<List<AgendaDto>> findAll() {
-        List<AgendaDto> agendas = agendaService.findAll();
+        List<AgendaDto> agendas = agendaService.getAllAgendas();
         return ResponseEntity.ok(agendas);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AgendaDto> findById(@PathVariable Long id) {
-        AgendaDto agendaDto = agendaService.findById(id);
-        if (agendaDto != null) {
-            return ResponseEntity.ok(agendaDto);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<AgendaDto> agendaDto = agendaService.getAgendaById(id);
+        return agendaDto.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<AgendaDto> create(@RequestBody AgendaCreateRequest agendaRequest) {
-        AgendaDto createdAgenda = agendaService.save(agendaRequest);
+        AgendaDto createdAgenda = agendaService.createAgenda(agendaRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAgenda);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AgendaDto> update(@PathVariable Long id, @RequestBody AgendaDto agendaDto) {
-        AgendaDto updatedAgenda = agendaService.update(id, agendaDto);
-        if (updatedAgenda != null) {
-            return ResponseEntity.ok(updatedAgenda);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<AgendaDto> updatedAgenda = agendaService.updateAgenda(id, agendaDto);
+        return updatedAgenda.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        agendaService.delete(id);
+        agendaService.deleteAgenda(id);
         return ResponseEntity.noContent().build();
     }
 }

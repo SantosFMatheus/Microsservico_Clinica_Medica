@@ -17,5 +17,8 @@ public class ClinicaAdministrativo {
         return new ModelMapper();
     }
 
-
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 }

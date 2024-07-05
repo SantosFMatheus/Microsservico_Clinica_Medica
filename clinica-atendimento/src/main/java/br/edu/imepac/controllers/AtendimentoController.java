@@ -4,53 +4,53 @@ import br.edu.imepac.dtos.AtendimentoCreateRequest;
 import br.edu.imepac.dtos.AtendimentoDto;
 import br.edu.imepac.services.AtendimentoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/atendimentos")
+@RequestMapping("/atendimento")
 public class AtendimentoController {
-
     @Autowired
     private AtendimentoService atendimentoService;
 
     @PostMapping
-    public ResponseEntity<AtendimentoDto> create(@RequestBody AtendimentoCreateRequest atendimentoRequest) {
-        AtendimentoDto createdAtendimento = atendimentoService.save(atendimentoRequest);
-        return ResponseEntity.ok(createdAtendimento);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<AtendimentoDto>> getAll() {
-        List<AtendimentoDto> atendimentos = atendimentoService.findAll();
-        return ResponseEntity.ok(atendimentos);
+    public ResponseEntity<AtendimentoDto> createAtendimento(@RequestBody AtendimentoCreateRequest atendimentoCreateRequest) {
+        AtendimentoDto createdAtendimento = atendimentoService.save(atendimentoCreateRequest);
+        return new ResponseEntity<>(createdAtendimento, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AtendimentoDto> getById(@PathVariable Long id) {
-        AtendimentoDto atendimento = atendimentoService.findById(id);
-        if (atendimento != null) {
-            return ResponseEntity.ok(atendimento);
+    public ResponseEntity<AtendimentoDto> getAtendimento(@PathVariable Long id) {
+        AtendimentoDto atendimentoDto = atendimentoService.findById(id);
+        if (atendimentoDto != null) {
+            return new ResponseEntity<>(atendimentoDto, HttpStatus.OK);
         } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AtendimentoDto> update(@PathVariable Long id, @RequestBody AtendimentoDto atendimentoDto) {
-        AtendimentoDto updatedAtendimento = atendimentoService.update(id, atendimentoDto);
-        if (updatedAtendimento != null) {
-            return ResponseEntity.ok(updatedAtendimento);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping
+    public ResponseEntity<List<AtendimentoDto>> getAllAtendimentos() {
+        List<AtendimentoDto> atendimentos = atendimentoService.findAll();
+        return new ResponseEntity<>(atendimentos, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAtendimento(@PathVariable Long id) {
         atendimentoService.delete(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AtendimentoDto> updateAtendimento(@PathVariable Long id, @RequestBody AtendimentoDto atendimentoDetails) {
+        AtendimentoDto updatedAtendimento = atendimentoService.update(id, atendimentoDetails);
+        if (updatedAtendimento != null) {
+            return new ResponseEntity<>(updatedAtendimento, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
